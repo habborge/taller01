@@ -1,26 +1,38 @@
 const express = require('express');
+const requestId = require('express-request-id')();
+
+const logger = require('./config/logger');
+const api = require('./api/v1');
 
 const app = express();
 
-app.get('/', (req, res, next) => {
-  res.json({
-    message: 'Hello hab let´s do it',
-  });
-});
+// Setup middleware
+app.use(requestId);
+app.use(logger.requests);
+
+// Setup router and routes
+app.use('/api', api);
+app.use('/api/v1', api);
 
 // No route found handler
 app.use((req, res, next) => {
-  res.status(404);
-  res.json({
-    message: 'Error. Route not found',
+  next({
+    message: 'Route not found',
+    statusCode: 404,
+    type: 'warn',
   });
 });
 
+// Error handler
 app.use((err, req, res, next) => {
   const {
+    message,
     statusCode = 500,
-      message,
+    type = 'error'
   } = err;
+  const log = `${logger.header(req)} ${statusCode} ${message}`;
+
+  logger[type](log);
 
   res.status(statusCode);
   res.json({
