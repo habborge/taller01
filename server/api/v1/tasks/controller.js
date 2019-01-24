@@ -73,25 +73,45 @@ function create_task(description, author, project) {
 }
 
 function update_task(taskid, description, author, project) {
+  if ((description != null) && (author != null)) {
+    let id = parseInt(taskid);
+    let info = project.find(proje => proje._id === id);
+    const taskdate = dateFns.format(new Date(), "YYYY-MM-DD");
 
-  let id = parseInt(taskid);
-  let info = project.find(proje => proje._id === id);
-  const taskdate = dateFns.format(new Date(), "YYYY-MM-DD");
+    if (info != null) {
+      const data = {
+        _id: id,
+        description: description,
+        author: author,
+        created_at: info.created_at,
+        updated_at: taskdate,
+      };
+      project.splice(id - 1, 1);
+      project.splice(id - 1, 0, data);
+      message = "Tarea actualizada con exito!!";
+    }
+  } else {
+    message = "Los campos description: y author: no pueden estar vacios!!";
 
-  if (info != null) {
-    const data = {
-      _id: id,
-      description: description,
-      author: author,
-      created_at: info.created_at,
-      updated_at: taskdate,
-    };
-    project.splice(id - 1, 1);
-    project.splice(id - 1, 0, data);
   }
-  return project;
+
+  const vec = [message, project];
+  return vec;
 }
 
+function delete_task(taskid, project) {
+  let id = parseInt(taskid);
+  let info = project.find(proje => proje._id === id);
+  if (info != null) {
+    project.splice(id - 1, 1);
+    message = "Tarea Borrada con exito!!";
+  } else {
+    message = "Id de tarea no Existe!!";
+  }
+
+  return message
+
+}
 exports.all = (req, res, next) => {
   res.json(proyect);
 };
@@ -112,5 +132,6 @@ exports.update = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-  res.json({});
+  const taskId = delete_task(req.params.id, proyect);
+  res.json(taskId);
 };
