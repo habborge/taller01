@@ -28,7 +28,7 @@ app.use((err, req, res, next) => {
   const {
     message,
     statusCode = 500,
-    type = 'error'
+    type = 'error',
   } = err;
   const log = `${logger.header(req)} ${statusCode} ${message}`;
 
