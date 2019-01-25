@@ -72,14 +72,15 @@ proyect = [
 ```
 
 Routes to use:
-| Route | Method | Parameters | Body |
+
+| Route              | Method | Parameters | Body                                |
 | ------------------ | :----: | ---------: | ----------------------------------- |
-| /api/v1/tasks | GET | - | - |
-| /api/v1/tasks | POST | - | description: string, author: string |
-| /api/v1/tasks/{id} | GET | id: number | - |
-| /api/v1/tasks/{id} | PUT | id: number | description: string, author: string |
-| /api/v1/tasks/{id} | PATCH | id: number | description: string, author: string |
-| /api/v1/tasks/{id} | DELETE | id: number | - |
+| /api/v1/tasks      |  GET   |          - | -                                   |
+| /api/v1/tasks      |  POST  |          - | description: string, author: string |
+| /api/v1/tasks/{id} |  GET   | id: number | -                                   |
+| /api/v1/tasks/{id} |  PUT   | id: number | description: string, author: string |
+| /api/v1/tasks/{id} | PATCH  | id: number | description: string, author: string |
+| /api/v1/tasks/{id} | DELETE | id: number | -                                   |
 
 | Operations          | Status Code | Description                    |
 | ------------------- | ----------- | ------------------------------ |
