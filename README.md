@@ -88,7 +88,3 @@ Routes to use:
 | READ (GET)          | 200         | Get task from Id {id}          |
 | UPDATE (PUT, PATCH) | 200         | Update a task using a ID{\_id} |
 | DELETE (DELETE)     | 200 / 204   | Get task from Id {id}          |
-
-## Testing
-
-Not yet available.
