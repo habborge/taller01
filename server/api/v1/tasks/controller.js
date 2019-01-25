@@ -3,11 +3,9 @@
 /* eslint-disable prefer-const */
 const functions = require('./functions');
 
-let proyect = [
-  {
+let proyect = [{
     _id: 1,
-    description:
-      'Node.js es una plataforma que nos permite ejecutar código JavaScript fuera del navegador.',
+    description: 'Node.js es una plataforma que nos permite ejecutar código JavaScript fuera del navegador.',
     author: 'Hab Borge',
     created_at: '2018-12-30',
     updated_at: '2019-01-02',
