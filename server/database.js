@@ -7,8 +7,9 @@ exports.connect = () => {
   const {
     database,
   } = config;
+  const url = `mongodb://${database.username}:${database.password}@${database.url}`;
 
-  mongoose.connect(database.url, {
+  mongoose.connect(url, {
     useNewUrlParser: true,
   });
 

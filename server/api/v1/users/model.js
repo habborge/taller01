@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const post = {
-  location: String,
-  photo_url: String,
-  description: String,
+const user = {
+  firstname: String,
+  lastname: String,
+  email: String,
 };
 
-module.exports = mongoose.model('post', post);
+module.exports = mongoose.model('user', user);
