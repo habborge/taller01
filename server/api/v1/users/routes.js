@@ -7,6 +7,8 @@ const controller = require('./controller');
  * /api/posts/:id  PUT    - UPDATE
  * /api/posts/:id  DELETE - DELETE
  */
+router
+  .param('id', controller.id);
 
 router.route('/')
   .post(controller.create)

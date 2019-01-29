@@ -2,9 +2,28 @@
 /* eslint-disable indent */
 /* eslint-disable prefer-const */
 const Model = require('./model');
-const functions = require('./functions');
 
-let proyect = [];
+exports.id = (req, res, next, id) => {
+  Model.findById(id)
+    .exec()
+    .then((doc) => {
+      if (!doc) {
+        const message = `${Model.modelName} not found`;
+
+        next({
+          message,
+          statusCode: 404,
+          type: 'warn',
+        });
+      } else {
+        req.doc = doc;
+        next();
+      }
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
+};
 
 exports.all = (req, res, next) => {
   Model.find().exec()
@@ -32,44 +51,40 @@ exports.create = (req, res, next) => {
 };
 
 exports.read = (req, res, next) => {
-  const taskId = functions.read_task(req.params.id, proyect);
-  if (taskId) {
-    res.status(200);
-    res.json(taskId);
-  }
-  next({
-    message: `Task ID ${req.params.id} does not exist`,
-    statusCode: 404,
-  });
+  const {
+    doc,
+  } = req;
+
+  res.json(doc);
 };
 
 exports.update = (req, res, next) => {
-  const taskId = functions.read_task(req.params.id, proyect);
-  if (taskId) {
-    const taskInfo = functions.update_task(req.params.id, req.body.description, req.body.author, proyect);
-    if (taskInfo) {
-      res.status(200);
-      res.json(taskInfo);
-    }
-    next({
-      message: 'Description: y Author: fields can not empty!!',
-      statusCode: 400,
+  const {
+    doc,
+    body,
+  } = req;
+
+  Object.assign(doc, body);
+
+  doc.save()
+    .then((updated) => {
+      res.json(updated);
+    })
+    .catch((err) => {
+      next(new Error(err));
     });
-  }
-  next({
-    message: `Task ID ${req.params.id} does not exist`,
-    statusCode: 404,
-  });
 };
 
 exports.delete = (req, res, next) => {
-  const taskInfo = functions.delete_task(req.params.id, proyect);
-  if (taskInfo) {
-    res.status(204);
-    res.json(taskInfo);
-  }
-  next({
-    message: `Task ID ${req.params.id} does not exist`,
-    statusCode: 404,
-  });
+  const {
+    doc,
+  } = req;
+
+  doc.remove()
+    .then((removed) => {
+      res.json(removed);
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 };
