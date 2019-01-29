@@ -50,12 +50,7 @@ exports.read = (req, res, next) => {
 exports.update = (req, res, next) => {
   const taskId = functions.read_task(req.params.id, proyect);
   if (taskId) {
-    const taskInfo = functions.update_task(
-      req.params.id,
-      req.body.description,
-      req.body.author,
-      proyect,
-    );
+    const taskInfo = functions.update_task(req.params.id, req.body.description, req.body.author, proyect);
     if (taskInfo) {
       res.status(200);
       res.json(taskInfo);
@@ -72,9 +67,9 @@ exports.update = (req, res, next) => {
 };
 
 exports.delete = (req, res, next) => {
-  const taskId = functions.read_task(req.params.id, proyect);
-  if (taskId) {
-    const taskInfo = functions.delete_task(req.params.id, proyect);
+  const taskInfo = functions.delete_task(req.params.id, proyect);
+  if (taskInfo) {
+    res.status(204);
     res.json(taskInfo);
   }
   next({
