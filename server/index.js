@@ -28,9 +28,10 @@ app.use(bodyParser.json());
 app.use('/api', api);
 app.use('/api/v1', api);
 
-// No route found handler
+// Not route found handler
 app.use((req, res, next) => {
   next({
+    error: true,
     message: 'Route not found',
     statusCode: 404,
     type: 'warn',
@@ -41,15 +42,23 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   const {
     message,
-    statusCode = 500,
     type = 'error',
+  } = err;
+  let {
+    statusCode = 500,
   } = err;
   const log = `${logger.header(req)} ${statusCode} ${message}`;
 
-  logger[type](log);
+  // Validation Errors
+  if (err.message.startsWith('ValidationError')) {
+    statusCode = 422;
+  }
 
+  logger[type](log);
   res.status(statusCode);
   res.json({
+    error: true,
+    statusCode,
     message,
   });
 });

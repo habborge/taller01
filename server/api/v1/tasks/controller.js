@@ -1,79 +1,165 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 /* eslint-disable indent */
-/* eslint-disable prefer-const */
-const functions = require('./functions');
 
-let proyect = [{
-    _id: 1,
-    description: 'Node.js es una plataforma que nos permite ejecutar código JavaScript fuera del navegador.',
-    author: 'Hab Borge',
-    created_at: '2018-12-30',
-    updated_at: '2019-01-02',
-  },
-  {
-    _id: 2,
-    description: 'Muchas personas creen que Node.js se utiliza sólo para crear aplicaciones Web.',
-    author: 'Jesús Osorio',
-    created_at: '2019-01-03',
-    updated_at: '2019-01-04',
-  },
-];
+const config = require('./../../../config');
+
+const logger = require.main.require('./server/config/logger');
+const {
+  paginationParseParams,
+} = require.main.require('./server/utils/');
+const {
+  sortParseParams,
+  sortCompactToStr,
+} = require.main.require('./server/utils');
+const {
+  Model,
+  fields,
+  references,
+} = require('./model');
+
+const referencesNames = Object.getOwnPropertyNames(references);
+
+const {
+  pagination,
+} = config;
+
+exports.id = (req, res, next, id) => {
+  const populate = referencesNames.join(' ');
+  Model
+    .findById(id)
+    .populate(populate)
+    .exec()
+    .then((doc) => {
+      if (doc) {
+        req.doc = doc;
+        next();
+      } else {
+        const message = `${Model.modelName} not found`;
+
+        next({
+          success: false,
+          message,
+          statusCode: 404,
+          type: 'warn',
+        });
+      }
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
+};
 
 exports.all = (req, res, next) => {
-  res.json(proyect);
+  const {
+    query = {},
+  } = req;
+  const {
+    limit,
+    page,
+    skip,
+  } = paginationParseParams(query);
+  const {
+    sortBy,
+    direction,
+  } = sortParseParams(query, fields);
+  const populate = referencesNames.join(' ');
+
+  const all = Model.find()
+    .sort(sortCompactToStr(sortBy, direction))
+    .limit(limit)
+    .skip(skip)
+    .populate(populate);
+
+  const count = Model.count();
+
+  Promise.all([all.exec(), count.exec()])
+    .then((data) => {
+      const [docs, total] = data;
+      const pages = Math.ceil(total / limit);
+
+      res.json({
+        success: true,
+        items: docs,
+        meta: {
+          limit,
+          skip,
+          total,
+          page,
+          pages,
+          sortBy,
+          direction,
+        },
+      });
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 };
 
 exports.create = (req, res, next) => {
-  const newTask = functions.create_task(req.body.description, req.body.author, proyect);
-  if (newTask) {
-    res.status(201);
-    res.json(newTask);
-  }
-  next({
-    message: 'Description: y Author: fields can not empty!!',
-    statusCode: 400,
-  });
+  const {
+    body,
+  } = req;
+  const document = new Model(body);
+
+  document.save()
+    .then((doc) => {
+      res.status(201);
+      res.json({
+        success: true,
+        item: doc,
+      });
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 };
 
 exports.read = (req, res, next) => {
-  const taskId = functions.read_task(req.params.id, proyect);
-  if (taskId) {
-    res.status(200);
-    res.json(taskId);
-  }
-  next({
-    message: `Task ID ${req.params.id} does not exist`,
-    statusCode: 404,
+  const {
+    doc,
+  } = req;
+
+  res.json({
+    success: true,
+    item: doc,
   });
 };
 
 exports.update = (req, res, next) => {
-  const taskId = functions.read_task(req.params.id, proyect);
-  if (taskId) {
-    const taskInfo = functions.update_task(req.params.id, req.body.description, req.body.author, proyect);
-    if (taskInfo) {
-      res.status(200);
-      res.json(taskInfo);
-    }
-    next({
-      message: 'Description: y Author: fields can not empty!!',
-      statusCode: 400,
+  const {
+    doc,
+    body,
+  } = req;
+
+  Object.assign(doc, body);
+
+  doc.save()
+    .then((updated) => {
+      res.json({
+        success: true,
+        item: updated,
+      });
+    })
+    .catch((err) => {
+      next(new Error(err));
     });
-  }
-  next({
-    message: `Task ID ${req.params.id} does not exist`,
-    statusCode: 404,
-  });
 };
 
 exports.delete = (req, res, next) => {
-  const taskInfo = functions.delete_task(req.params.id, proyect);
-  if (taskInfo) {
-    res.status(204);
-    res.json(taskInfo);
-  }
-  next({
-    message: `Task ID ${req.params.id} does not exist`,
-    statusCode: 404,
-  });
+  const {
+    doc,
+  } = req;
+
+  doc.remove()
+    .then((removed) => {
+      res.json({
+        success: true,
+        item: removed,
+      });
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 };
