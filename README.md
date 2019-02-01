@@ -70,15 +70,15 @@ database: {
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
   },
-
+```
 #### local Connection
 
-When you install mongoDB locally, installation allows not creating an user and passowrd user root. in this case, If you do not created username and password in your local connection, you must edit ./server/database.js file and ./server/config/index.js
+When you install mongoDB locally, installation allows not creating an user and passowrd user root. in this case, If you do not created username and password in your local connection, you must edit ./server/database.js file and ./server/config/index.js.
 
 ```shell
 ./server/database.js
 const url = `mongodb://${database.url}`;
-````
+```
 
 ```shell
 ./server/config/index.js
@@ -134,3 +134,4 @@ OR
 | READ (GET)          | 200         | Get user from Id {id}          |
 | UPDATE (PUT, PATCH) | 200         | Update a user using a ID{\_id} |
 | DELETE (DELETE)     | 200 / 204   | Get user from Id {id}          |
+````
