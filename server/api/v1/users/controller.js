@@ -4,7 +4,8 @@
 
 const config = require('./../../../config');
 
-const logger = require.main.require('./server/config/logger');
+// const logger = require.main.require('./server/config/logger');
+
 const {
   paginationParseParams,
 } = require.main.require('./server/utils/');
@@ -95,9 +96,11 @@ exports.create = (req, res, next) => {
 
   document.save()
     .then((doc) => {
+      const message = 'The Task was created!!';
       res.status(201);
       res.json({
         success: true,
+        message,
         item: doc,
       });
     })
@@ -127,8 +130,10 @@ exports.update = (req, res, next) => {
 
   doc.save()
     .then((updated) => {
+      const message = 'User was updated!!';
       res.json({
         success: true,
+        message,
         item: updated,
       });
     })
@@ -144,8 +149,10 @@ exports.delete = (req, res, next) => {
 
   doc.remove()
     .then((removed) => {
+      const message = 'User was deleted!!';
       res.json({
         success: true,
+        message,
         item: removed,
       });
     })
