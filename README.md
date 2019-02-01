@@ -63,7 +63,7 @@ In this case, you do not do anything, neither in ./server/database.js file nor i
 const url = `mongodb://${database.username}:${database.password}@${database.url}`;
 ```
 
-````shell
+```shell
 ./server/config/index.js
 database: {
     url: process.env.DATABASE_URL,
@@ -71,6 +71,7 @@ database: {
     password: process.env.DATABASE_PASSWORD,
   },
 ```
+
 #### local Connection
 
 When you install mongoDB locally, installation allows not creating an user and passowrd user root. in this case, If you do not created username and password in your local connection, you must edit ./server/database.js file and ./server/config/index.js.
@@ -134,4 +135,7 @@ OR
 | READ (GET)          | 200         | Get user from Id {id}          |
 | UPDATE (PUT, PATCH) | 200         | Update a user using a ID{\_id} |
 | DELETE (DELETE)     | 200 / 204   | Get user from Id {id}          |
-````
+
+```
+
+```
