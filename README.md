@@ -10,6 +10,7 @@ Task web service need to run:
 
 - node 10
 - npm 6
+- mongoDB (Only if you want to install it locally)
 
 ## Install
 
@@ -55,16 +56,35 @@ You must edit the database file.
 
 #### Remote Connection
 
+In this case, you do not do anything, neither in ./server/database.js file nor in ./server/config/index.js file
+
 ```shell
-In this case, you do not do anything in database.js file:
+./server/database.js
 const url = `mongodb://${database.username}:${database.password}@${database.url}`;
 ```
 
+````shell
+./server/config/index.js
+database: {
+    url: process.env.DATABASE_URL,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+  },
+
 #### local Connection
 
+When you install mongoDB locally, installation allows not creating an user and passowrd user root. in this case, If you do not created username and password in your local connection, you must edit ./server/database.js file and ./server/config/index.js
+
 ```shell
-If in you do not created username and password in your local connection, you must edit database.js file:
+./server/database.js
 const url = `mongodb://${database.url}`;
+````
+
+```shell
+./server/config/index.js
+database: {
+    url: process.env.DATABASE_URL,
+  },
 ```
 
 ## Considerations
