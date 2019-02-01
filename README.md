@@ -55,13 +55,17 @@ You must edit the database file.
 
 #### Remote Connection
 
-In this case you do not do anything in database.js file:
+```shell
+In this case, you do not do anything in database.js file:
 const url = `mongodb://${database.username}:${database.password}@${database.url}`;
+```
 
 #### local Connection
 
+```shell
 If in you do not created username and password in your local connection, you must edit database.js file:
 const url = `mongodb://${database.url}`;
+```
 
 ## Considerations
 
