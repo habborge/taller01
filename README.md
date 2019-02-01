@@ -25,10 +25,13 @@ After you need install some node modules, to do this, you just need run a simple
 npm install
 ```
 
-OBS: Do not forget create the .env file in your root web service folder and edit the file.
+#### OBS: Do not forget create the .env file in your root web service folder and edit the file.
 
 ```text
 SERVER_PORT= port number that you prefer.
+DATABASE_URL= Database URL, well be local or remote connection.
+DATABASE_USERNAME= username (if you created it)
+DATABASE_PASSWORD= password (if you created it)
 ```
 
 ## How to Start the server
@@ -45,33 +48,32 @@ but, if you will use this API in order to work in production environment you mus
 npm start
 ```
 
+## Database connection
+
+This project has a mongoDB database. You can use a local connection or remote connection.
+You must edit the database file.
+
+#### Remote Connection
+
+In this case you do not do anything in database.js file:
+const url = `mongodb://${database.username}:${database.password}@${database.url}`;
+
+#### local Connection
+
+If in you do not created username and password in your local connection, you must edit database.js file:
+const url = `mongodb://${database.url}`;
+
 ## Considerations
 
-- http://yourdomainname:3000/api/v1/task/ It is the same as using http://yourdomainname:3000/api/task/
+- http://yourdomainname:3000/api/v1/tasks/ It is the same as using http://yourdomainname:3000/api/tasks/
 
-- in controller.js file there is an array preloaded
+OR
 
-```shell
-proyect = [
-  {
-    _id: 1,
-    description:
-      'Node.js es una plataforma que nos permite ejecutar código JavaScript fuera del navegador.',
-    author: 'Hab Borge',
-    created_at: '2018-12-30',
-    updated_at: '2019-01-02',
-  },
-  {
-    _id: 2,
-    description: 'Muchas personas creen que Node.js se utiliza sólo para crear aplicaciones Web.',
-    author: 'Jesús Osorio',
-    created_at: '2019-01-03',
-    updated_at: '2019-01-04',
-  },
-];
-```
+- http://yourdomainname:3000/api/v1/users/ It is the same as using http://yourdomainname:3000/api/users/
 
-Routes to use:
+### Routes to use:
+
+#### Task Routes
 
 | Route              | Method | Parameters | Body                                |
 | ------------------ | :----: | ---------: | ----------------------------------- |
@@ -89,3 +91,22 @@ Routes to use:
 | READ (GET)          | 200         | Get task from Id {id}          |
 | UPDATE (PUT, PATCH) | 200         | Update a task using a ID{\_id} |
 | DELETE (DELETE)     | 200 / 204   | Get task from Id {id}          |
+
+#### Task Routes
+
+| Route              | Method | Parameters | Body                                |
+| ------------------ | :----: | ---------: | ----------------------------------- |
+| /api/v1/users      |  GET   |          - | -                                   |
+| /api/v1/users      |  POST  |          - | description: string, author: string |
+| /api/v1/users/{id} |  GET   | id: number | -                                   |
+| /api/v1/users/{id} |  PUT   | id: number | description: string, author: string |
+| /api/v1/users/{id} | PATCH  | id: number | description: string, author: string |
+| /api/v1/users/{id} | DELETE | id: number | -                                   |
+
+| Operations          | Status Code | Description                    |
+| ------------------- | ----------- | ------------------------------ |
+| CREATE (POST)       | 201         | Create a new user              |
+| READ (GET)          | 200         | Get all users                  |
+| READ (GET)          | 200         | Get user from Id {id}          |
+| UPDATE (PUT, PATCH) | 200         | Update a user using a ID{\_id} |
+| DELETE (DELETE)     | 200 / 204   | Get user from Id {id}          |
