@@ -1,6 +1,7 @@
 const express = require('express');
 const requestId = require('express-request-id')();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const logger = require('./config/logger');
 const api = require('./api/v1');
@@ -11,6 +12,15 @@ database.connect();
 
 // Initialize Express app
 const app = express();
+
+// setup CORS
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    allowedHeaders: ['Accept', 'Content-Type', 'Authorization'],
+  }),
+);
 
 // Setup middleware
 app.use(requestId);
@@ -28,13 +38,15 @@ app.use(bodyParser.json());
 app.use('/api', api);
 app.use('/api/v1', api);
 
-// Not route found handler
+// No route found handler
 app.use((req, res, next) => {
+  const message = 'Route not found';
+  const statusCode = 404;
+
   next({
-    error: true,
-    message: 'Route not found',
-    statusCode: 404,
-    type: 'warn',
+    message,
+    statusCode,
+    type: 'info',
   });
 });
 
@@ -55,10 +67,9 @@ app.use((err, req, res, next) => {
   }
 
   logger[type](log);
+
   res.status(statusCode);
   res.json({
-    error: true,
-    statusCode,
     message,
   });
 });

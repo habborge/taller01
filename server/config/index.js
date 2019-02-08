@@ -21,7 +21,7 @@ const config = {
     },
     direction: {
       default: 'desc',
-      options: ['asc', 'desc'],
+      options: ['desc', 'desc'],
     },
   },
 };

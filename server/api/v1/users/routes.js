@@ -14,6 +14,9 @@ router.route('/')
   .post(controller.create)
   .get(controller.all);
 
+router.route('/signup').post(controller.signup);
+router.route('/signin').post(controller.signin);
+
 router.route('/:id')
   .get(controller.read)
   .put(controller.update)

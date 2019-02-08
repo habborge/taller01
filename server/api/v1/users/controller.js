@@ -1,26 +1,16 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-/* eslint-disable max-len */
 /* eslint-disable indent */
-
-const config = require('./../../../config');
-
-// const logger = require.main.require('./server/config/logger');
-
-const {
-  paginationParseParams,
-} = require.main.require('./server/utils/');
-const {
-  sortParseParams,
-  sortCompactToStr,
-} = require.main.require('./server/utils');
 const {
   Model,
   fields,
 } = require('./model');
 
 const {
-  pagination,
-} = config;
+  paginationParseParams,
+  sortParseParams,
+  sortCompactToStr,
+} = require.main.require('./server/utils');
 
 exports.id = (req, res, next, id) => {
   Model.findById(id)
@@ -46,12 +36,12 @@ exports.id = (req, res, next, id) => {
 
 exports.all = (req, res, next) => {
   const {
-    query = {},
+    query,
   } = req;
   const {
     limit,
-    page,
     skip,
+    page,
   } = paginationParseParams(query);
   const {
     sortBy,
@@ -67,6 +57,7 @@ exports.all = (req, res, next) => {
   Promise.all([all.exec(), count.exec()])
     .then((data) => {
       const [docs, total] = data;
+
       const pages = Math.ceil(total / limit);
 
       res.json({
@@ -88,24 +79,103 @@ exports.all = (req, res, next) => {
     });
 };
 
-exports.create = (req, res, next) => {
+exports.signup = (req, res, next) => {
   const {
-    body,
+    body = {},
   } = req;
   const document = new Model(body);
 
-  document.save()
+  document
+    .save()
     .then((doc) => {
-      const message = 'The Task was created!!';
-      res.status(201);
-      res.json({
-        success: true,
-        message,
-        item: doc,
-      });
+      res.json(doc);
     })
     .catch((err) => {
       next(new Error(err));
+    });
+};
+
+exports.create = (req, res, next) => {
+  const {
+    body = {}, decoded = {},
+  } = req;
+  const {
+    _id = null,
+  } = decoded;
+
+  const document = new Model(body);
+
+  document
+    .save()
+    .then((doc) => {
+      const doc2 = {
+        name: `${doc.firstname} ${doc.lastname}`,
+        email: doc.email,
+        createdAt: doc.createdAt,
+      };
+      res.json(doc2);
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
+};
+
+exports.signin = (req, res, next) => {
+  const {
+    body = {},
+  } = req;
+  const {
+    email = '', password = '',
+  } = body;
+
+  let user = {};
+  Model.findOne({
+      email,
+    })
+    .exec()
+    .then((doc) => {
+      if (!doc) {
+        const message = 'Email or password are invalid';
+
+        next({
+          success: false,
+          message,
+          statusCode: 200,
+          type: 'info',
+        });
+      }
+      user = doc;
+      return doc.verifyPassword(password);
+    })
+    .then((verified) => {
+      if (!verified) {
+        const message = 'Email or password are invalid';
+
+        next({
+          success: false,
+          message,
+          statusCode: 200,
+          type: 'info',
+        });
+      } else {
+        const {
+          _id,
+        } = user;
+        const token = signToken({
+          _id,
+        });
+
+        res.json({
+          success: true,
+          item: user,
+          meta: {
+            token,
+          },
+        });
+      }
+    })
+    .catch((error) => {
+      next(new Error(error));
     });
 };
 
@@ -115,27 +185,22 @@ exports.read = (req, res, next) => {
   } = req;
 
   res.json({
-    success: true,
-    item: doc,
+    items: doc,
   });
 };
 
 exports.update = (req, res, next) => {
   const {
     doc,
-    body,
+    body = {},
   } = req;
 
   Object.assign(doc, body);
 
-  doc.save()
+  doc
+    .save()
     .then((updated) => {
-      const message = 'User was updated!!';
-      res.json({
-        success: true,
-        message,
-        item: updated,
-      });
+      res.json(updated);
     })
     .catch((err) => {
       next(new Error(err));
@@ -147,14 +212,10 @@ exports.delete = (req, res, next) => {
     doc,
   } = req;
 
-  doc.remove()
+  doc
+    .remove()
     .then((removed) => {
-      const message = 'User was deleted!!';
-      res.json({
-        success: true,
-        message,
-        item: removed,
-      });
+      res.json(removed);
     })
     .catch((err) => {
       next(new Error(err));

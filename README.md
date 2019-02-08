@@ -100,14 +100,14 @@ OR
 
 #### Task Routes
 
-| Route              | Method | Parameters | Body                                |
-| ------------------ | :----: | ---------: | ----------------------------------- |
-| /api/v1/tasks      |  GET   |          - | -                                   |
-| /api/v1/tasks      |  POST  |          - | description: string, author: string |
-| /api/v1/tasks/{id} |  GET   | id: number | -                                   |
-| /api/v1/tasks/{id} |  PUT   | id: number | description: string, author: string |
-| /api/v1/tasks/{id} | PATCH  | id: number | description: string, author: string |
-| /api/v1/tasks/{id} | DELETE | id: number | -                                   |
+| Route              | Method | Parameters | Body                                  |
+| ------------------ | :----: | ---------: | ------------------------------------- |
+| /api/v1/tasks      |  GET   |          - | -                                     |
+| /api/v1/tasks      |  POST  |          - | description: string, authorId: string |
+| /api/v1/tasks/{id} |  GET   | id: number | -                                     |
+| /api/v1/tasks/{id} |  PUT   | id: number | description: string, authorId: string |
+| /api/v1/tasks/{id} | PATCH  | id: number | description: string, authorId: string |
+| /api/v1/tasks/{id} | DELETE | id: number | -                                     |
 
 | Operations          | Status Code | Description                    |
 | ------------------- | ----------- | ------------------------------ |
@@ -117,7 +117,7 @@ OR
 | UPDATE (PUT, PATCH) | 200         | Update a task using a ID{\_id} |
 | DELETE (DELETE)     | 200 / 204   | Get task from Id {id}          |
 
-#### Task Routes
+#### user Routes
 
 | Route              | Method | Parameters | Body                                |
 | ------------------ | :----: | ---------: | ----------------------------------- |

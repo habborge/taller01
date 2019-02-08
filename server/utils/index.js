@@ -1,9 +1,7 @@
-const config = require('./../config');
-
 const {
   pagination,
   sort,
-} = config;
+} = require('./../config');
 
 const paginationParseParams = ({
   limit = pagination.limit,

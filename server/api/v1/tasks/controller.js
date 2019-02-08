@@ -1,48 +1,32 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable max-len */
-/* eslint-disable indent */
+const {
+  Model,
+  references,
+  fields,
+} = require('./model');
 
-const config = require('./../../../config');
-
-// const logger = require.main.require('./server/config/logger');
 const {
   paginationParseParams,
-} = require.main.require('./server/utils/');
-const {
   sortParseParams,
   sortCompactToStr,
 } = require.main.require('./server/utils');
-const {
-  Model,
-  fields,
-  references,
-} = require('./model');
 
 const referencesNames = Object.getOwnPropertyNames(references);
 
-const {
-  pagination,
-} = config;
-
 exports.id = (req, res, next, id) => {
-  const populate = referencesNames.join(' ');
-  Model
-    .findById(id)
-    .populate(populate)
+  Model.findById(id)
     .exec()
     .then((doc) => {
-      if (doc) {
-        req.doc = doc;
-        next();
-      } else {
+      if (!doc) {
         const message = `${Model.modelName} not found`;
 
         next({
-          success: false,
           message,
           statusCode: 404,
           type: 'warn',
         });
+      } else {
+        req.doc = doc;
+        next();
       }
     })
     .catch((err) => {
@@ -52,17 +36,18 @@ exports.id = (req, res, next, id) => {
 
 exports.all = (req, res, next) => {
   const {
-    query = {},
+    query,
   } = req;
   const {
     limit,
-    page,
     skip,
+    page,
   } = paginationParseParams(query);
   const {
     sortBy,
     direction,
   } = sortParseParams(query, fields);
+
   const populate = referencesNames.join(' ');
 
   const all = Model.find()
@@ -70,12 +55,12 @@ exports.all = (req, res, next) => {
     .limit(limit)
     .skip(skip)
     .populate(populate);
-
-  const count = Model.count();
+  const count = Model.countDocuments();
 
   Promise.all([all.exec(), count.exec()])
     .then((data) => {
       const [docs, total] = data;
+
       const pages = Math.ceil(total / limit);
 
       res.json({
@@ -99,19 +84,20 @@ exports.all = (req, res, next) => {
 
 exports.create = (req, res, next) => {
   const {
-    body,
+    body = {}, decoded = {},
   } = req;
+  const {
+    _id = null,
+  } = decoded;
+  if (_id) {
+    body.authorId = _id;
+  }
   const document = new Model(body);
 
-  document.save()
+  document
+    .save()
     .then((doc) => {
-      const message = 'The Task was created!!';
-      res.status(201);
-      res.json({
-        success: true,
-        message,
-        item: doc,
-      });
+      res.json(doc);
     })
     .catch((err) => {
       next(new Error(err));
@@ -124,27 +110,27 @@ exports.read = (req, res, next) => {
   } = req;
 
   res.json({
-    success: true,
-    item: doc,
+    items: doc,
   });
 };
 
 exports.update = (req, res, next) => {
   const {
-    doc,
-    body,
+    doc = {}, body = {}, decoded = {},
   } = req;
+  const {
+    _id = null,
+  } = decoded;
+  if (_id) {
+    body.authorId = _id;
+  }
 
   Object.assign(doc, body);
 
-  doc.save()
+  doc
+    .save()
     .then((updated) => {
-      const message = 'The Task was updated!!';
-      res.json({
-        success: true,
-        message,
-        item: updated,
-      });
+      res.json(updated);
     })
     .catch((err) => {
       next(new Error(err));
@@ -156,14 +142,10 @@ exports.delete = (req, res, next) => {
     doc,
   } = req;
 
-  doc.remove()
+  doc
+    .remove()
     .then((removed) => {
-      const message = 'The Task was deleted!!';
-      res.json({
-        success: true,
-        message,
-        item: removed,
-      });
+      res.json(removed);
     })
     .catch((err) => {
       next(new Error(err));

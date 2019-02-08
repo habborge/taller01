@@ -10,6 +10,11 @@ const fields = {
     required: true,
     trim: true,
   },
+  status: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 };
 
 const references = {
